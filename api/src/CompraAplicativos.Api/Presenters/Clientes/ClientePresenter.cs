@@ -4,9 +4,9 @@ namespace CompraAplicativos.Api.Presenters.Clientes
 {
     public sealed class ClientePresenter
     {
-        private readonly CadastrarClienteOutput _output;
+        private readonly object _output;
 
-        public ClientePresenter(CadastrarClienteOutput output)
+        public ClientePresenter(object output)
         {
             _output = output;
         }

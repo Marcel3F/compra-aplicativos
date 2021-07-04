@@ -12,12 +12,17 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
 
         public ClienteRepository()
         {
-            clientes = new List<Cliente> { new Cliente("teste", "10", DateTime.Now, "M", null) };
+            clientes = new List<Cliente> { new Cliente("teste", "33333333333", DateTime.Now, "M", null) };
         }
 
         public async Task Cadastrar(Cliente cliente)
         {
-            clientes.Add(new Cliente("teste", "10", DateTime.Now, "F", null));
+            clientes.Add(cliente);
+        }
+
+        public async Task<Cliente> ObterClientePorCpf(string cpf)
+        {
+            return clientes.FirstOrDefault(cliente => cliente.Cpf == cpf);
         }
 
         public async Task<bool> VerificarClienteExistePorCpf(string cpf)

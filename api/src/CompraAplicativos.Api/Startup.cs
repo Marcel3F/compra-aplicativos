@@ -1,5 +1,6 @@
 using CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos;
 using CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente;
+using CompraAplicativos.Application.UseCases.Cliente.ObterCliente;
 using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Infrastructure.DataAccess.Repositories;
@@ -31,6 +32,7 @@ namespace CompraAplicativos.Api
             services.AddScoped<IAplicativoRepository, AplicativoRepository>();
 
             services.AddScoped<ICadastrarClienteUseCase, CadastrarClienteUseCase>();
+            services.AddScoped<IObterClienteUseCase, ObterClienteUseCase>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
 
             services.AddMemoryCache();

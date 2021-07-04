@@ -9,6 +9,7 @@ namespace CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente
         public string Nome { get; set; }
 
         [Required(ErrorMessage = "O CPF é obrigatório", AllowEmptyStrings = false)]
+        [RegularExpression(@"^[0-9]{11}$", ErrorMessage = "CPF inválido")]
         public string Cpf { get; set; }
 
         public DateTime DataNascimento { get; set; }
