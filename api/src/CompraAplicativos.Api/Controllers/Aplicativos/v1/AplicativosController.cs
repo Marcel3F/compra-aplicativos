@@ -1,13 +1,17 @@
 ﻿using CompraAplicativos.Api.Presenters.Aplicativos;
 using CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Produces("application/json")]
+    [Route("api/aplicativos")]
     [ApiController]
     public class AplicativosController : ControllerBase
     {
@@ -20,6 +24,13 @@ namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
         }
 
         [HttpGet]
+        [SwaggerOperation(
+            Summary = "Obter aplicativos",
+            Description = "Obtêm todos os aplicativos cadastrados",
+            OperationId = "ObterAplicativos"
+        )]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ObterAplicativosOutput>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromServices] IObterAplicativosUseCase useCase)
         {
             _logger.LogInformation("Obter lita de aplicativos");
