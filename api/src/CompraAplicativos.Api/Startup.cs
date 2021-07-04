@@ -28,6 +28,8 @@ namespace CompraAplicativos.Api
             services.AddScoped<IObterAplicativosUseCase, ObterAplicativosUseCase>();
             services.AddScoped<IAplicativoRepository, AplicativoRepository>();
 
+            services.AddMemoryCache();
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
