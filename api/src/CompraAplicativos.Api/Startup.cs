@@ -1,5 +1,7 @@
 using CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos;
+using CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente;
 using CompraAplicativos.Core.Aplicativos;
+using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Infrastructure.DataAccess.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +29,9 @@ namespace CompraAplicativos.Api
         {
             services.AddScoped<IObterAplicativosUseCase, ObterAplicativosUseCase>();
             services.AddScoped<IAplicativoRepository, AplicativoRepository>();
+
+            services.AddScoped<ICadastrarClienteUseCase, CadastrarClienteUseCase>();
+            services.AddScoped<IClienteRepository, ClienteRepository>();
 
             services.AddMemoryCache();
 
