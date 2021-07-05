@@ -1,33 +1,70 @@
 ﻿using CompraAplicativos.Core.Clientes;
-using System;
-using System.Collections.Generic;
+using CompraAplicativos.Infrastructure.DataAccess.Schemas;
+using CompraAplicativos.Infrastructure.DataAccess.Schemas.Extensions;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
 {
     public sealed class ClienteRepository : IClienteRepository
     {
-        private readonly List<Cliente> clientes;
+        private readonly IMongoCollection<ClienteSchema> _clientes;
 
-        public ClienteRepository()
+        public ClienteRepository(MongoDB mongoDB)
         {
-            clientes = new List<Cliente> { new Cliente("teste", "33333333333", DateTime.Now, "M", null) };
+            _clientes = mongoDB.DB.GetCollection<ClienteSchema>("clientes");
         }
 
         public async Task Cadastrar(Cliente cliente)
         {
-            clientes.Add(cliente);
+            ClienteSchema clienteSchema = new ClienteSchema
+            {
+                Nome = cliente.Nome,
+                Cpf = cliente.Cpf,
+                DataNascimento = cliente.DataNascimento,
+                Sexo = cliente.Sexo,
+                Endereco = new EnderecoSchema
+                {
+                    Logradouro = cliente.Endereco.Logradouro,
+                    Numero = cliente.Endereco.Numero,
+                    Complemento = cliente.Endereco.Complemento,
+                    Cidade = cliente.Endereco.Cidade,
+                    Cep = cliente.Endereco.Cep,
+                    UF = cliente.Endereco.Uf
+                }
+            };
+
+            await _clientes.InsertOneAsync(clienteSchema).ConfigureAwait(false);
         }
 
         public async Task<Cliente> ObterClientePorCpf(string cpf)
         {
-            return clientes.FirstOrDefault(cliente => cliente.Cpf == cpf);
+            ClienteSchema clienteSchema = await _clientes.AsQueryable().FirstOrDefaultAsync(cliente => cliente.Cpf == cpf).ConfigureAwait(false);
+
+            if (clienteSchema is null)
+            {
+                return default;
+            }
+
+            return clienteSchema.SchemaToEntity();
+        }
+
+        public async Task<Cliente> ObterClientePorId(string clienteId)
+        {
+            ClienteSchema clienteSchema = await _clientes.AsQueryable().FirstOrDefaultAsync(cliente => cliente.Id == clienteId).ConfigureAwait(false);
+
+            if (clienteSchema is null)
+            {
+                return default;
+            }
+
+            return clienteSchema.SchemaToEntity();
         }
 
         public async Task<bool> VerificarClienteExistePorCpf(string cpf)
         {
-            return clientes.Any(cliente => cliente.Cpf == cpf);
+            return await _clientes.AsQueryable().AnyAsync(cliente => cliente.Cpf == cpf).ConfigureAwait(false);
         }
     }
 }

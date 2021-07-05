@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
+namespace CompraAplicativos.Api.Controllers.Clientes.v1
 {
     [ApiVersion("1.0")]
     [Produces("application/json")]
@@ -34,8 +36,7 @@ namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
             OperationId = "CadastrarCliente"
         )]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CadastrarClienteOutput))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post(
             [FromServices] ICadastrarClienteUseCase useCase,
@@ -47,13 +48,18 @@ namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
 
                 CadastrarClienteOutput output = await useCase.Executar(input);
 
-                return Ok(new ClientePresenter(output).Presenter());
+                return new ObjectResult(new ClientePresenter(output).Presenter()) { StatusCode = (int)HttpStatusCode.Created };
             }
             catch (BusinessException businessException)
             {
                 _logger.LogError(businessException, "Erro ao tentar cadastrar o cliente");
 
-                return UnprocessableEntity();
+                Dictionary<string, IList<string>> erros = new Dictionary<string, IList<string>>
+                {
+                    [nameof(BusinessException)] = new List<string>()
+                };
+                erros[nameof(BusinessException)].Add(businessException.Message);
+                return new BadRequestObjectResult(error: new ValidationProblemDetails(erros.ToDictionary(item => item.Key, item => item.Value.ToArray())));
             }
             catch (Exception exception)
             {

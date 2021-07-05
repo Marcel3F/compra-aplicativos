@@ -35,6 +35,8 @@ namespace CompraAplicativos.Api
             services.AddScoped<IObterClienteUseCase, ObterClienteUseCase>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
 
+            services.AddSingleton<Infrastructure.DataAccess.MongoDB>();
+
             services.AddMemoryCache();
 
             services.AddApiVersioning(options =>

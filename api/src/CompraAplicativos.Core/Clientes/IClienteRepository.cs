@@ -7,5 +7,6 @@ namespace CompraAplicativos.Core.Clientes
         Task Cadastrar(Cliente cliente);
         Task<bool> VerificarClienteExistePorCpf(string cpf);
         Task<Cliente> ObterClientePorCpf(string cpf);
+        Task<Cliente> ObterClientePorId(string clienteId);
     }
 }
