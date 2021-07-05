@@ -1,8 +1,6 @@
-﻿using CompraAplicativos.Core.Clientes;
+﻿using CompraAplicativos.Core.Aplicativos;
+using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras.Enums;
-using CompraAplicativos.Core.Compras.ValueObjects;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CompraAplicativos.Core.Compras
 {
@@ -10,10 +8,10 @@ namespace CompraAplicativos.Core.Compras
     {
         public Compra(
             Cliente cliente,
-            List<Item> itens)
+            Aplicativo aplicativo)
         {
             Cliente = cliente;
-            _itens = itens;
+            Aplicativo = aplicativo;
 
             AtribuirStatus(Status.AguardandoProcessamento);
         }
@@ -24,18 +22,7 @@ namespace CompraAplicativos.Core.Compras
         }
 
         public Cliente Cliente { get; }
-        public decimal ValorTotal 
-        { 
-            get
-            {
-                return _itens.Sum(item => item.Valor);
-            }
-        }
-        public readonly List<Item> _itens;
-        public IReadOnlyCollection<Item> Itens => _itens;
+        public Aplicativo Aplicativo { get; }
         public Status Status { get; private set; }
-
-        
-
     }
 }

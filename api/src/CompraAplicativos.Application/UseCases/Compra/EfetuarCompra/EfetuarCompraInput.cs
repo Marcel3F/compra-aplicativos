@@ -1,6 +1,8 @@
 ﻿namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 {
-    public class EfetuarCompraInput
+    public sealed class EfetuarCompraInput
     {
+        public string ClienteId { get; set; }
+        public string AplicativoId { get; set; }
     }
 }
