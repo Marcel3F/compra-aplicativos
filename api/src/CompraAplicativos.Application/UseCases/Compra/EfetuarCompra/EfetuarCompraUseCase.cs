@@ -2,6 +2,8 @@
 using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
+using CompraAplicativos.Core.Compras.Enums;
+using System;
 using System.Threading.Tasks;
 
 namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
@@ -27,6 +29,20 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
         public async Task<EfetuarCompraOutput> Executar(EfetuarCompraInput input)
         {
+            await RecuperarEntidadesDependentes(input);
+
+            if (!Enum.IsDefined(typeof(ModoPagamento), input.ModoPagamento))
+            {
+                throw new BusinessException("Modo de pagamento indisponível");
+            }
+
+            Core.Compras.Compra compra = await RegistrarCompra(input);
+
+            return new EfetuarCompraOutput(compra);
+        }
+
+        private async Task RecuperarEntidadesDependentes(EfetuarCompraInput input)
+        {
             Cliente = await ObterCliente(input.ClienteId);
 
             if (Cliente is null)
@@ -40,10 +56,6 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
             {
                 throw new NotFoundException("Aplicativo não está cadastrado");
             }
-
-            Core.Compras.Compra compra = await RegistrarCompra();
-
-            return new EfetuarCompraOutput(compra);
         }
 
         private async Task<Core.Aplicativos.Aplicativo> ObterAplicativo(string aplicativoId)
@@ -51,20 +63,20 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
             return await _aplicativoRepository.ObterAplicativoPorId(aplicativoId);
         }
 
-        private async Task<Core.Clientes.Cliente> ObterCliente(string cpf)
+        private async Task<Core.Clientes.Cliente> ObterCliente(string clienteId)
         {
-            return await _clienteRepository.ObterClientePorCpf(cpf);
+            return await _clienteRepository.ObterClientePorId(clienteId);
         }
 
-        private async Task<Core.Compras.Compra> RegistrarCompra()
+        private async Task<Core.Compras.Compra> RegistrarCompra(EfetuarCompraInput input)
         {
             Core.Compras.Compra compra = new Core.Compras.Compra(
                 Cliente,
-                Aplicativo);
+                Aplicativo,
+                input.Valor,
+                (ModoPagamento)input.ModoPagamento);
 
-            await _compraRepository.Registrar(compra);
-
-            return compra;
+            return await _compraRepository.Registrar(compra);
         }
     }
 }

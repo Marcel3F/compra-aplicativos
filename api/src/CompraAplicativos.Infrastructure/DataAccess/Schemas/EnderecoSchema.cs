@@ -1,6 +1,6 @@
 ﻿namespace CompraAplicativos.Infrastructure.DataAccess.Schemas
 {
-    public class EnderecoSchema
+    public sealed class EnderecoSchema
     {
         public string Logradouro { get; set; }
         public string Numero { get; set; }

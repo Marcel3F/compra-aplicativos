@@ -2,6 +2,6 @@
 {
     public enum ModoPagamento
     {
-        Credito = 1
+        CartaoCredito = 1
     }
 }

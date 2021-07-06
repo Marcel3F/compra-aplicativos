@@ -1,15 +1,18 @@
-﻿using CompraAplicativos.Infrastructure.DataAccess.Schemas;
+﻿using CompraAplicativos.Core.Compras.Enums;
+using CompraAplicativos.Infrastructure.DataAccess.Schemas;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using System;
 
 namespace CompraAplicativos.Infrastructure.DataAccess
 {
-    public class MongoDB
+    public sealed class MongoDB
     {
-        public IMongoDatabase DB { get; }
+        public IMongoDatabase Database { get; }
 
         public MongoDB(
             IConfiguration configuration,
@@ -17,14 +20,15 @@ namespace CompraAplicativos.Infrastructure.DataAccess
         {
             try
             {
-                var client = new MongoClient(configuration["ConnectionString"]);
-                DB = client.GetDatabase(configuration["NomeBanco"]);
+                MongoClient client = new MongoClient(configuration["ConnectionString"]);
+                Database = client.GetDatabase(configuration["NomeBanco"]);
                 MapClasses();
             }
             catch (Exception ex)
             {
-                logger.LogError("Não foi possivel se conectar ao MongoDB");
-                throw new MongoException("Não foi possivel se conectar ao MongoDB", ex);
+                const string messagem = "Não foi possivel se conectar ao MongoDB";
+                logger.LogError(messagem);
+                throw new MongoException(messagem, ex);
             }
         }
 
@@ -46,6 +50,18 @@ namespace CompraAplicativos.Infrastructure.DataAccess
                 {
                     i.AutoMap();
                     i.MapIdMember(c => c.Id);
+                    i.SetIgnoreExtraElements(true);
+                });
+            }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(CompraSchema)))
+            {
+                BsonClassMap.RegisterClassMap<CompraSchema>(i =>
+                {
+                    i.AutoMap();
+                    i.MapIdMember(c => c.Id);
+                    i.MapMember(c => c.Status).SetSerializer(new EnumSerializer<Status>(BsonType.Int32));
+                    i.MapMember(c => c.ModoPagamento).SetSerializer(new EnumSerializer<ModoPagamento>(BsonType.Int32));
                     i.SetIgnoreExtraElements(true);
                 });
             }

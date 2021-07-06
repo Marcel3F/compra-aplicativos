@@ -4,6 +4,6 @@ namespace CompraAplicativos.Core.Compras
 {
     public interface ICompraRepository
     {
-        Task Registrar(Compra compra);
+        Task<Compra> Registrar(Compra compra);
     }
 }

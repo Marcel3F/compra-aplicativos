@@ -13,7 +13,7 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
 
         public ClienteRepository(MongoDB mongoDB)
         {
-            _clientes = mongoDB.DB.GetCollection<ClienteSchema>("clientes");
+            _clientes = mongoDB.Database.GetCollection<ClienteSchema>("clientes");
         }
 
         public async Task<Cliente> Cadastrar(Cliente cliente)

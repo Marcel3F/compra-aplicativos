@@ -20,7 +20,7 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
             MongoDB mongoDB)
         {
             _memoryCache = memoryCache;
-            _aplicativos = mongoDB.DB.GetCollection<AplicativoSchema>("aplicativos");
+            _aplicativos = mongoDB.Database.GetCollection<AplicativoSchema>("aplicativos");
         }
 
         public async Task<Aplicativo> ObterAplicativoPorId(string aplicativoId)

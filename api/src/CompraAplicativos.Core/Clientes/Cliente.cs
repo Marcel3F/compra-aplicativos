@@ -5,6 +5,9 @@ namespace CompraAplicativos.Core.Clientes
 {
     public class Cliente
     {
+        private object nome;
+        private object cpf;
+
         public Cliente(
             string id,
             string nome,
@@ -35,6 +38,13 @@ namespace CompraAplicativos.Core.Clientes
             Sexo = sexo;
 
             AtribuirEndereco(endereco);
+        }
+
+        public Cliente(string id, object nome, object cpf)
+        {
+            Id = id;
+            this.nome = nome;
+            this.cpf = cpf;
         }
 
         private void AtribuirEndereco(Endereco endereco)

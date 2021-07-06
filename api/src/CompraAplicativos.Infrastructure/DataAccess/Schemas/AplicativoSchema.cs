@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace CompraAplicativos.Infrastructure.DataAccess.Schemas
 {
-    public class AplicativoSchema
+    public sealed class AplicativoSchema
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

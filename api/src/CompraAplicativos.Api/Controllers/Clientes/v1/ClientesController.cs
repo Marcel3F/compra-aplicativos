@@ -1,4 +1,5 @@
-﻿using CompraAplicativos.Api.Presenters.Clientes;
+﻿using CompraAplicativos.Api.Common;
+using CompraAplicativos.Api.Presenters.Clientes;
 using CompraAplicativos.Application.Exceptions;
 using CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente;
 using CompraAplicativos.Application.UseCases.Cliente.ObterCliente;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -54,16 +54,11 @@ namespace CompraAplicativos.Api.Controllers.Clientes.v1
             {
                 _logger.LogError(businessException, "Erro ao tentar cadastrar o cliente");
 
-                Dictionary<string, IList<string>> erros = new Dictionary<string, IList<string>>
-                {
-                    [nameof(BusinessException)] = new List<string>()
-                };
-                erros[nameof(BusinessException)].Add(businessException.Message);
-                return new BadRequestObjectResult(error: new ValidationProblemDetails(erros.ToDictionary(item => item.Key, item => item.Value.ToArray())));
+                return new BadRequestObjectResult(error: new ValidationProblemDetails(businessException.ToDictionary()));
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Erro inesperado ao tentar obter o cliente");
+                _logger.LogError(exception, "Erro inesperado ao tentar cadastrar o cliente");
                 return new ObjectResult(exception) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }

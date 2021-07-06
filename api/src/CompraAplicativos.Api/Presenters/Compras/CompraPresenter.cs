@@ -1,10 +1,10 @@
 ﻿namespace CompraAplicativos.Api.Presenters.Clientes
 {
-    public sealed class ClientePresenter
+    public sealed class CompraPresenter
     {
         private readonly object _output;
 
-        public ClientePresenter(object output)
+        public CompraPresenter(object output)
         {
             _output = output;
         }
