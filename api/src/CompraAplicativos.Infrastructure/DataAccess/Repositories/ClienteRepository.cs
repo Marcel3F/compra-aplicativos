@@ -16,7 +16,7 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
             _clientes = mongoDB.DB.GetCollection<ClienteSchema>("clientes");
         }
 
-        public async Task Cadastrar(Cliente cliente)
+        public async Task<Cliente> Cadastrar(Cliente cliente)
         {
             ClienteSchema clienteSchema = new ClienteSchema
             {
@@ -36,6 +36,7 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
             };
 
             await _clientes.InsertOneAsync(clienteSchema).ConfigureAwait(false);
+            return clienteSchema.SchemaToEntity();
         }
 
         public async Task<Cliente> ObterClientePorCpf(string cpf)

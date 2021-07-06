@@ -43,9 +43,7 @@ namespace CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente
                 input.Cidade,
                 input.Uf));
 
-            await _clienteRepository.Cadastrar(cliente);
-
-            return cliente;
+            return await _clienteRepository.Cadastrar(cliente);
         }
 
         private async Task<bool> ValidarClienteExiste(string cpf)

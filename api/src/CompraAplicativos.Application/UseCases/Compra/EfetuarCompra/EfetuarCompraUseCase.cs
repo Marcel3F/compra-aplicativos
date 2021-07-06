@@ -2,7 +2,6 @@
 using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
-using System;
 using System.Threading.Tasks;
 
 namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
@@ -32,14 +31,14 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
             if (Cliente is null)
             {
-                throw new NotFoundException();
+                throw new NotFoundException("Cliente não está cadastrado");
             }
 
             Aplicativo = await ObterAplicativo(input.AplicativoId);
 
             if (Aplicativo is null)
             {
-                throw new NotFoundException();
+                throw new NotFoundException("Aplicativo não está cadastrado");
             }
 
             Core.Compras.Compra compra = await RegistrarCompra();
@@ -52,9 +51,9 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
             return await _aplicativoRepository.ObterAplicativoPorId(aplicativoId);
         }
 
-        private async Task<Core.Clientes.Cliente> ObterCliente(string clienteId)
+        private async Task<Core.Clientes.Cliente> ObterCliente(string cpf)
         {
-            return await _clienteRepository.ObterClientePorId(clienteId);
+            return await _clienteRepository.ObterClientePorCpf(cpf);
         }
 
         private async Task<Core.Compras.Compra> RegistrarCompra()

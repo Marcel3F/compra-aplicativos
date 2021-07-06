@@ -1,6 +1,5 @@
 ﻿using CompraAplicativos.Application.Exceptions;
 using CompraAplicativos.Core.Clientes;
-using System;
 using System.Threading.Tasks;
 
 namespace CompraAplicativos.Application.UseCases.Cliente.ObterCliente

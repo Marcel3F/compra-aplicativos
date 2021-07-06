@@ -7,6 +7,7 @@ namespace CompraAplicativos.Application.UseCases.Cliente.ObterCliente
     {
         public ObterClienteOutput(Core.Clientes.Cliente cliente)
         {
+            Id = cliente.Id;
             Nome = cliente.Nome;
             Cpf = cliente.Cpf;
             DataNascimento = cliente.DataNascimento;
@@ -14,6 +15,7 @@ namespace CompraAplicativos.Application.UseCases.Cliente.ObterCliente
             Endereco = cliente.Endereco;
         }
 
+        public string Id { get; }
         public string Nome { get; }
         public string Cpf { get; }
         public DateTime DataNascimento { get; }

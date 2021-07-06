@@ -18,7 +18,7 @@ namespace CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos
         {
             var aplicativos = await _aplicativoRepository.ObterAplicativos();
             
-            return aplicativos.Select(aplicativo => new ObterAplicativosOutput(aplicativo.Nome, aplicativo.Valor));
+            return aplicativos.Select(aplicativo => new ObterAplicativosOutput(aplicativo.Id, aplicativo.Nome, aplicativo.Valor));
         }
     }
 }
