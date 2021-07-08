@@ -10,6 +10,6 @@ Nesse projeto foram utilizadas as seguintes tecnologias:
 ## Design arquitetural
 
 <p align="center">
-    <img alt="Api Compra Aplicativos" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagem-readme/solucao-compra-aplicativos.png" />
+    <img alt="Api Compra Aplicativos" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagem-readme/solucao-compra-aplicativos.png?token=AC6YYEHSOGSDGRZSQNWTZ2DA46GKC" />
 </p>
 
