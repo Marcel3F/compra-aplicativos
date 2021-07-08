@@ -64,7 +64,7 @@ namespace CompraAplicativos.Api.Controllers.Compras.v1
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Erro inesperado ao tentar efetuar compra");
-                return new ObjectResult(exception) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

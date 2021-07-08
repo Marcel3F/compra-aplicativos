@@ -9,9 +9,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CompraAplicativos.Application\CompraAplicativos.Application.csproj" />
     <ProjectReference Include="..\CompraAplicativos.Core\CompraAplicativos.Core.csproj" />
   </ItemGroup>
 

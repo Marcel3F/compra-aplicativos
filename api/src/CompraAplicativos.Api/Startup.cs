@@ -1,3 +1,4 @@
+using CompraAplicativos.Application.MessageBroker;
 using CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos;
 using CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente;
 using CompraAplicativos.Application.UseCases.Cliente.ObterCliente;
@@ -6,6 +7,7 @@ using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
 using CompraAplicativos.Infrastructure.DataAccess.Repositories;
+using CompraAplicativos.Infrastructure.MessageBroker;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -41,7 +43,11 @@ namespace CompraAplicativos.Api
 
             services.AddSingleton<Infrastructure.DataAccess.MongoDB>();
 
+            services.AddSingleton<IProcessaCompraSender, ProcessaCompraSender>();
+
             services.AddMemoryCache();
+
+            services.AddHealthChecks();
 
             services.AddApiVersioning(options =>
             {
@@ -112,6 +118,7 @@ namespace CompraAplicativos.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }

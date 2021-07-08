@@ -1,8 +1,10 @@
 ﻿using CompraAplicativos.Application.Exceptions;
+using CompraAplicativos.Application.MessageBroker;
 using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
 using CompraAplicativos.Core.Compras.Enums;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -13,6 +15,9 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
         private readonly ICompraRepository _compraRepository;
         private readonly IClienteRepository _clienteRepository;
         private readonly IAplicativoRepository _aplicativoRepository;
+        private readonly IProcessaCompraSender _processaCompraSender;
+
+        private readonly ILogger<EfetuarCompraUseCase> _logger;
 
         private Core.Clientes.Cliente Cliente;
         private Core.Aplicativos.Aplicativo Aplicativo;
@@ -20,11 +25,15 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
         public EfetuarCompraUseCase(
             ICompraRepository compraRepository,
             IClienteRepository clienteRepository,
-            IAplicativoRepository aplicativoRepository)
+            IAplicativoRepository aplicativoRepository,
+            IProcessaCompraSender processaCompraSender,
+            ILogger<EfetuarCompraUseCase> logger)
         {
             _compraRepository = compraRepository;
             _clienteRepository = clienteRepository;
             _aplicativoRepository = aplicativoRepository;
+            _processaCompraSender = processaCompraSender;
+            _logger = logger;
         }
 
         public async Task<EfetuarCompraOutput> Executar(EfetuarCompraInput input)
@@ -70,13 +79,33 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
         private async Task<Core.Compras.Compra> RegistrarCompra(EfetuarCompraInput input)
         {
-            Core.Compras.Compra compra = new Core.Compras.Compra(
+            Core.Compras.Compra compra = default;
+            try
+            {
+                compra = new Core.Compras.Compra(
                 Cliente,
                 Aplicativo,
                 input.Valor,
                 (ModoPagamento)input.ModoPagamento);
 
-            return await _compraRepository.Registrar(compra);
+                compra = await _compraRepository.Registrar(compra);
+
+
+                await _processaCompraSender.Enviar(compra);
+                return compra;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Ocorreu algum erro ao registrar compra");
+
+                if (compra != null && !string.IsNullOrEmpty(compra.Id))
+                {
+                    await _compraRepository.AlterarStatusCompraParaFalha(compra.Id);
+                }
+
+                throw;
+            }
+
         }
     }
 }

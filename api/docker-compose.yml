@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+
+  nosqldata:
+    image: mongo
+    ports:
+      - "27017:27017"
+    # networks:
+      # - compra-aplicativos-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=compra-aplicativos 
+      - MONGO_INITDB_ROOT_PASSWORD=e296cd9f
+     
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=compra-aplicativos
+      - RABBITMQ_DEFAULT_PASS=3ebd5535        
+
+  # compra-aplicativos-api:
+    # container_name: "compra-aplicativos-api"
+    # build:
+      # context: .
+      # dockerfile: src/CompraAplicativos.Api/Dockerfile
+    # ports:
+      # - "5001:80"
+    # networks:
+      # - compra-aplicativos-network
+    # depends_on:
+      # - nosqldata
+
+  # ordering-backgroundtasks:
+    # image: ${REGISTRY:-eshop}/ordering.backgroundtasks:${PLATFORM:-linux}-${TAG:-latest}
+    # build:
+      # context: .
+      # dockerfile: Services/Ordering/Ordering.BackgroundTasks/Dockerfile
+    # depends_on:
+      # - nosqldata
+      # - rabbitmq

@@ -1,0 +1,29 @@
+[{
+  "_id": {
+    "$oid": "60e4ef4f00fe0fce68237112"
+  },
+  "Nome": "Aplicativo 01",
+  "Valor": 6.5
+},
+{
+  "_id": {
+    "$oid": "60e3345400fe0fce68237101"
+  },
+  "Nome": "Aplicativo 02",
+  "Valor": 7.5
+},
+{
+  "_id": {
+    "$oid": "60e4ef6300fe0fce68237113"
+  },
+  "Nome": "Aplicativo 03",
+  "Valor": 10.5
+},
+{
+  "_id": {
+    "$oid": "60e4ef7200fe0fce68237114"
+  },
+  "Nome": "Aplicativo 04",
+  "Valor": 1.5
+},
+]

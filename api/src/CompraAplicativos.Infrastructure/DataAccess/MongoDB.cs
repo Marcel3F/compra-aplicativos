@@ -20,8 +20,8 @@ namespace CompraAplicativos.Infrastructure.DataAccess
         {
             try
             {
-                MongoClient client = new MongoClient(configuration["ConnectionString"]);
-                Database = client.GetDatabase(configuration["NomeBanco"]);
+                MongoClient client = new MongoClient(configuration["MongoDB:ConnectionString"]);
+                Database = client.GetDatabase(configuration["MongoDB:NomeBanco"]);
                 MapClasses();
             }
             catch (Exception ex)

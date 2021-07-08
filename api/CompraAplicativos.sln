@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30711.63
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompraAplicativos.Core", "src\CompraAplicativos.Core\CompraAplicativos.Core.csproj", "{8CD25915-34A0-465E-9ED8-F31D9E730A76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompraAplicativos.Core", "src\CompraAplicativos.Core\CompraAplicativos.Core.csproj", "{8CD25915-34A0-465E-9ED8-F31D9E730A76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompraAplicativos.Application", "src\CompraAplicativos.Application\CompraAplicativos.Application.csproj", "{03BAF685-D865-4CA5-BADA-C56C54AB0C6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompraAplicativos.Application", "src\CompraAplicativos.Application\CompraAplicativos.Application.csproj", "{03BAF685-D865-4CA5-BADA-C56C54AB0C6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompraAplicativos.Infrastructure", "src\CompraAplicativos.Infrastructure\CompraAplicativos.Infrastructure.csproj", "{B568DC16-686A-492C-888F-5E61F4CCA00F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompraAplicativos.Infrastructure", "src\CompraAplicativos.Infrastructure\CompraAplicativos.Infrastructure.csproj", "{B568DC16-686A-492C-888F-5E61F4CCA00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompraAplicativos.Api", "src\CompraAplicativos.Api\CompraAplicativos.Api.csproj", "{5B2E5142-4F02-433D-AFB5-0961B72F6F4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompraAplicativos.Api", "src\CompraAplicativos.Api\CompraAplicativos.Api.csproj", "{5B2E5142-4F02-433D-AFB5-0961B72F6F4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

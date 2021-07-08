@@ -1,4 +1,5 @@
 ﻿using CompraAplicativos.Core.Compras;
+using CompraAplicativos.Core.Compras.Enums;
 using CompraAplicativos.Infrastructure.DataAccess.Schemas;
 using CompraAplicativos.Infrastructure.DataAccess.Schemas.Extensions;
 using MongoDB.Driver;
@@ -39,6 +40,15 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
 
             await _compras.InsertOneAsync(compraSchema).ConfigureAwait(false);
             return compraSchema.SchemaToEntity();
+        }
+
+        public async Task<bool> AlterarStatusCompraParaFalha(string compraId)
+        {
+            UpdateDefinition<CompraSchema> atualizarStatus = Builders<CompraSchema>.Update.Set(compra => compra.Status, Status.Falha);
+
+            UpdateResult resultado = await _compras.UpdateOneAsync(compra => compra.Id == compraId, atualizarStatus).ConfigureAwait(false);
+
+            return resultado.ModifiedCount > 0;
         }
     }
 }

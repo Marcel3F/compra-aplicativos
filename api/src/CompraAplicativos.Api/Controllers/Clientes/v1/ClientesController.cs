@@ -59,7 +59,7 @@ namespace CompraAplicativos.Api.Controllers.Clientes.v1
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Erro inesperado ao tentar cadastrar o cliente");
-                return new ObjectResult(exception) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -94,7 +94,7 @@ namespace CompraAplicativos.Api.Controllers.Clientes.v1
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Erro inesperado ao tentar obter o cliente");
-                return new ObjectResult(exception) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

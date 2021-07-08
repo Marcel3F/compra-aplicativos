@@ -46,7 +46,7 @@ namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Erro inesperado ao tentar recuperar aplicativos");
-                return new ObjectResult(exception) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
