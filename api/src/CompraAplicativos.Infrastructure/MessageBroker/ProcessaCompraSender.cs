@@ -27,22 +27,22 @@ namespace CompraAplicativos.Infrastructure.MessageBroker
 
         public Task Enviar(Compra compra)
         {
-            if (ConnectionExists())
+            if (ConexaoExiste())
             {
-                string queueName = _configuration["RabbitMQ:QueueName"];
+                string queue = _configuration["RabbitMQ:Queue"];
                 using IModel channel = _connection.CreateModel();
-                channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: queue, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
                 string json = JsonConvert.SerializeObject(compra);
                 byte[] body = Encoding.UTF8.GetBytes(json);
 
-                channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
+                channel.BasicPublish(exchange: "", routingKey: queue, basicProperties: null, body: body);
             }
 
             return Task.CompletedTask;
         }
 
-        private void CreateConnection()
+        private void CriarConexao()
         {
             try
             {
@@ -51,7 +51,7 @@ namespace CompraAplicativos.Infrastructure.MessageBroker
                     HostName = _configuration["RabbitMQ:HostName"],
                     UserName = _configuration["RabbitMQ:UserName"],
                     Password = _configuration["RabbitMQ:Password"],
-                    Port = 5672
+                    Port = Convert.ToInt32(_configuration["RabbitMQ:Port"])
                 };
                 _connection = factory.CreateConnection();
             }
@@ -63,14 +63,14 @@ namespace CompraAplicativos.Infrastructure.MessageBroker
             }
         }
 
-        private bool ConnectionExists()
+        private bool ConexaoExiste()
         {
             if (_connection != null)
             {
                 return true;
             }
 
-            CreateConnection();
+            CriarConexao();
 
             return _connection != null;
         }

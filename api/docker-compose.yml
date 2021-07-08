@@ -2,14 +2,21 @@ version: '3.4'
 
 services:
 
-  nosqldata:
+  mongodb:
     image: mongo
     ports:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=compra-aplicativos 
       - MONGO_INITDB_ROOT_PASSWORD=e296cd9f
-     
+      
+  mongo-seed:
+    build:
+        context: .
+        dockerfile: Data/Dockerfile
+    links:
+      - mongodb 
+      
   rabbitmq:
     image: rabbitmq:3-management
     ports:
