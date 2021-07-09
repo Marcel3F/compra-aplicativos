@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UnitTest\UsesCaseTests\Cliente\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CompraAplicativos.Application\CompraAplicativos.Application.csproj" />
   </ItemGroup>
 

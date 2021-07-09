@@ -26,7 +26,7 @@ namespace CompraAplicativos.Application.UseCases.Cliente.ObterCliente
 
             if (cliente is null)
             {
-                throw new NotFoundException("Cliente  não cadastrado");
+                throw new NotFoundException("Cliente não cadastrado");
             }
 
             return cliente;
