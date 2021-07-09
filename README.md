@@ -11,7 +11,7 @@ Nesse projeto foram utilizadas as seguintes tecnologias:
 
 Desenho de solução:
 <p align="center">
-    <img alt="Api Compra Aplicativos" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/solucao-compra-aplicativos.png?token=AC6YYEHSOGSDGRZSQNWTZ2DA46GKC" />
+    <img alt="Api Compra Aplicativos" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/solucao-compra-aplicativos.png?token=AC6YYEDFOLJIBPVHCK55K43A46MRW" />
 </p>
 
 Desenho das aplicações
@@ -39,5 +39,5 @@ dotnet run --project ./servico-consumer/src/CompraAplicativos.Consumer/CompraApl
 ## Endpoints
 Abaixo está uma imagem contendo informação do swagger para acessar os endpoints:
 <p align="center">
-    <img alt="Api Compra Aplicativos" src="" />
+    <img alt="Swagger" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/swagger-endpoints.PNG?token=AC6YYEGZJSHU7HHD5S5SPRTA46MT6" />
 </p>
