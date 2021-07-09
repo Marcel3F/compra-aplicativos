@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using CompraAplicativos.Application.Exceptions;
 using CompraAplicativos.Application.MessageBroker;
 using CompraAplicativos.Application.UseCases.Compra.EfetuarCompra;
 using CompraAplicativos.Core.Aplicativos;
@@ -10,6 +11,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.Exceptions;
+using NSubstitute.ReturnsExtensions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -59,7 +61,6 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                 })
                 .Generate();
 
-
             _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
             _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
             _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
@@ -72,6 +73,136 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
             //Assert
             registraCompra.Should().NotThrow<ReceivedCallsException>();
             output.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeModoPagamentoCompraIndisponivel()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 2,
+                    Valor = faker.Random.Decimal()
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+
+            //Act
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            await executarUseCase.Should().ThrowAsync<BusinessException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeClienteNaoPossuiCadastro()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal()
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsNull();
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+
+            //Act
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            await executarUseCase.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeAplicativoNaoPossuiCadastro()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal()
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsNull();
+
+            //Act
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            await executarUseCase.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeCompraFoiRegistradaComoFalha()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal()
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
+
+            _processaCompraSender.Enviar(Arg.Any<Core.Compras.Compra>()).Returns(x => { throw new Exception(); });
+
+            Action alterarStatusParaFalha = () => _compraRepository.Received(1).AlterarStatusCompraParaFalha(Arg.Any<string>());
+
+            //Act
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            await executarUseCase.Should().ThrowAsync<Exception>();
+            alterarStatusParaFalha.Should().NotThrow<ReceivedCallsException>();
         }
     }
 }
