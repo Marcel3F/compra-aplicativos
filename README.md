@@ -41,3 +41,9 @@ Abaixo está uma imagem contendo informação do swagger para acessar os endpoin
 <p align="center">
     <img alt="Swagger" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/swagger-endpoints.PNG?token=AC6YYEGZJSHU7HHD5S5SPRTA46MT6" />
 </p>
+
+## Como rodar os testes unitários
+Para rodar os testes unitários, é necessário executar o seguinte comando:
+```
+dotnet test ./api/src/CompraAplicativos.Tests/CompraAplicativos.Tests.csproj
+```
