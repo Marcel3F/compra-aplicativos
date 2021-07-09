@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CompraAplicativos.Infrastructure.MessageBroker
 {
-    public class ProcessaCompraSender : IProcessaCompraSender
+    public sealed class ProcessaCompraSender : IProcessaCompraSender
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<ProcessaCompraSender> _logger;

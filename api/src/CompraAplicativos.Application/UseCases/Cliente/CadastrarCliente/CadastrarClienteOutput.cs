@@ -3,7 +3,7 @@ using System;
 
 namespace CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente
 {
-    public class CadastrarClienteOutput
+    public sealed class CadastrarClienteOutput
     {
         public CadastrarClienteOutput(Core.Clientes.Cliente cliente)
         {

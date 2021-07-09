@@ -1,6 +1,6 @@
 ﻿namespace CompraAplicativos.Application.UseCases.Aplicativo.ObterAplicativos
 {
-    public class ObterAplicativosOutput
+    public sealed class ObterAplicativosOutput
     {
         public ObterAplicativosOutput(
             string id,
