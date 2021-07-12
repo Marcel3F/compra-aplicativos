@@ -48,8 +48,12 @@ namespace CompraAplicativos.Consumer
 
             if (compra != null)
             {
+                _logger.LogInformation("Compra {Id}: início do processamento", compra.Id);
+
                 _compraRepository.AlterarStatusCompraParaProcessado(compra.Id);
                 _processaCompraReceiver.Limpar();
+
+                _logger.LogInformation("Compra {Id}: processada com sucesso", compra.Id);
             }
         }
     }

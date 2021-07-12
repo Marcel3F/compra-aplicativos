@@ -4,6 +4,7 @@ using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
 using CompraAplicativos.Core.Compras.Enums;
+using CompraAplicativos.Core.Compras.ValueObjects;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -88,8 +89,13 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
                 input.Valor,
                 (ModoPagamento)input.ModoPagamento);
 
-                compra = await _compraRepository.Registrar(compra);
+                if (input.GuardarCartao)
+                {
+                    compra.GuardarCartao(new Cartao(input.Cartao));
+                }
 
+                compra = await _compraRepository.Registrar(compra);
+                _logger.LogInformation("Compra {Id}: registrada com sucesso", compra.Id);
 
                 await _processaCompraSender.Enviar(compra);
                 return compra;
@@ -101,6 +107,7 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
                 if (compra != null && !string.IsNullOrEmpty(compra.Id))
                 {
                     await _compraRepository.AlterarStatusCompraParaFalha(compra.Id);
+                    _logger.LogInformation("Compra {Id}: registrada como falha", compra.Id);
                 }
 
                 throw;

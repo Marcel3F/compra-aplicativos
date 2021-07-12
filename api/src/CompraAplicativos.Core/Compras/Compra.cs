@@ -1,6 +1,7 @@
 ﻿using CompraAplicativos.Core.Aplicativos;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras.Enums;
+using CompraAplicativos.Core.Compras.ValueObjects;
 using System;
 
 namespace CompraAplicativos.Core.Compras
@@ -49,6 +50,11 @@ namespace CompraAplicativos.Core.Compras
             Status = status;
         }
 
+        public void GuardarCartao(Cartao cartao)
+        {
+            Cartao = cartao;
+        }
+
         public string Id { get; }
         public Cliente Cliente { get; }
         public Aplicativo Aplicativo { get; }
@@ -56,5 +62,7 @@ namespace CompraAplicativos.Core.Compras
         public ModoPagamento ModoPagamento { get; }
         public Status Status { get; private set; }
         public DateTime DataCompra { get; private set; }
+        public Cartao Cartao { get; private set; }
+
     }
 }

@@ -13,6 +13,7 @@ using NSubstitute;
 using NSubstitute.Exceptions;
 using NSubstitute.ReturnsExtensions;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -57,10 +58,12 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     AplicativoId = faker.Lorem.Letter(10),
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
-                    Valor = faker.Random.Decimal()
+                    Valor = faker.Random.Decimal(),
+                    Cartao = faker.Finance.CreditCardNumber()
                 })
                 .Generate();
 
+            
             _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
             _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
             _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
@@ -68,9 +71,11 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
             Action registraCompra = () => _compraRepository.Received(1).Registrar(Arg.Any<Core.Compras.Compra>());
 
             //Act
+            bool inputValido = Validator.TryValidateObject(input, new ValidationContext(input, null, null), null, true);
             EfetuarCompraOutput output = await useCase.Executar(input);
 
             //Assert
+            inputValido.Should().BeTrue();
             registraCompra.Should().NotThrow<ReceivedCallsException>();
             output.Should().NotBeNull();
         }
@@ -92,7 +97,8 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     AplicativoId = faker.Lorem.Letter(10),
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 2,
-                    Valor = faker.Random.Decimal()
+                    Valor = faker.Random.Decimal(),
+                    Cartao = faker.Finance.CreditCardNumber()
                 })
                 .Generate();
 
@@ -123,7 +129,8 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     AplicativoId = faker.Lorem.Letter(10),
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
-                    Valor = faker.Random.Decimal()
+                    Valor = faker.Random.Decimal(),
+                    Cartao = faker.Finance.CreditCardNumber()
                 })
                 .Generate();
 
@@ -154,7 +161,8 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     AplicativoId = faker.Lorem.Letter(10),
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
-                    Valor = faker.Random.Decimal()
+                    Valor = faker.Random.Decimal(),
+                    Cartao = faker.Finance.CreditCardNumber()
                 })
                 .Generate();
 
@@ -165,6 +173,40 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
             Func<Task> executarUseCase = () => useCase.Executar(input);
 
             //Assert
+            await executarUseCase.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeCartaoInvalido()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal(),
+                    Cartao = "1111111111111111111111111111"
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsNull();
+
+            //Act
+            bool inputValido = Validator.TryValidateObject(input, new ValidationContext(input, null, null), null, true);
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            inputValido.Should().BeFalse();
             await executarUseCase.Should().ThrowAsync<NotFoundException>();
         }
 
@@ -185,7 +227,8 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     AplicativoId = faker.Lorem.Letter(10),
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
-                    Valor = faker.Random.Decimal()
+                    Valor = faker.Random.Decimal(),
+                    Cartao = faker.Finance.CreditCardNumber()
                 })
                 .Generate();
 

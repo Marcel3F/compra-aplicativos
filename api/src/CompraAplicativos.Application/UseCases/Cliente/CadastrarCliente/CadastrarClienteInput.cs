@@ -1,21 +1,22 @@
-﻿using System;
+﻿using CompraAplicativos.Application.Common;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CompraAplicativos.Application.UseCases.Cliente.CadastrarCliente
 {
     public sealed class CadastrarClienteInput
     {
-        [Required(ErrorMessage = "O nome é obrigatório", AllowEmptyStrings = false)]
+        [Required(ErrorMessage = MensagensValidacao.CampoObrigatorio, AllowEmptyStrings = false)]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "O CPF é obrigatório", AllowEmptyStrings = false)]
-        [RegularExpression(@"^[0-9]{11}$", ErrorMessage = "CPF inválido")]
+        [Required(ErrorMessage = MensagensValidacao.CampoObrigatorio, AllowEmptyStrings = false)]
+        [RegularExpression(@"^[0-9]{11}$", ErrorMessage = MensagensValidacao.CampoInvalido)]
         public string Cpf { get; set; }
 
         public DateTime DataNascimento { get; set; }
         public string Sexo { get; set; }
 
-        [Required(ErrorMessage = "O logradouro é obrigatório", AllowEmptyStrings = false)]
+        [Required(ErrorMessage = MensagensValidacao.CampoObrigatorio, AllowEmptyStrings = false)]
         public string Logradouro { get; set; }
         public string Numero { get; set; }
         public string Complemento { get; set; }

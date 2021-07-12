@@ -13,6 +13,7 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Schemas
         public DateTime DataCompra { get; set; }
         public decimal Valor { get; set; }
         public ModoPagamento ModoPagamento { get; set; }
+        public CartaoSchema Cartao { get; set; }
         public ClienteCompraSchema Cliente { get; set; }
         public AplicativoSchema Aplicativo { get; set; }
     }

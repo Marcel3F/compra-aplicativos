@@ -43,9 +43,11 @@ namespace CompraAplicativos.Api.Controllers.Compras.v1
         {
             try
             {
-                _logger.LogInformation("Ínicio do cadastro de cliente");
+                _logger.LogInformation("Ínicio do efetuar compra");
 
                 EfetuarCompraOutput output = await useCase.Executar(input);
+
+                _logger.LogInformation("Fim do efetuar compra");
 
                 return new ObjectResult(new CompraPresenter(output).Presenter()) { StatusCode = (int)HttpStatusCode.Created };
             }
