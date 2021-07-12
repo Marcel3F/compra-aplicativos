@@ -42,6 +42,13 @@ Abaixo está uma imagem contendo informação do swagger para acessar os endpoin
     <img alt="Swagger" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/swagger-endpoints.PNG?token=AC6YYEGZJSHU7HHD5S5SPRTA46MT6" />
 </p>
 
+## RabbitMQ
+Abaixo está uma imagem contendo informação para acessar o RabbitMQ:
+<p align="center">
+    <img alt="Swagger" src="https://raw.githubusercontent.com/Marcel3F/compra-aplicativos/main/imagens-readme/rabbitmq.PNG" />
+</p>
+As credenciais estão no arquivo *appsettings.json*
+
 ## Como rodar os testes unitários
 Para rodar os testes unitários, é necessário executar o seguinte comando:
 ```
