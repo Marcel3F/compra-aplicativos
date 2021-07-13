@@ -3,6 +3,7 @@ using CompraAplicativos.Application.Exceptions;
 using CompraAplicativos.Application.MessageBroker;
 using CompraAplicativos.Application.UseCases.Compra.EfetuarCompra;
 using CompraAplicativos.Core.Aplicativos;
+using CompraAplicativos.Core.Cartoes.ValueObjects;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
 using CompraAplicativos.Core.Compras.Enums;
@@ -59,7 +60,9 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
                     Valor = faker.Random.Decimal(),
-                    Cartao = faker.Finance.CreditCardNumber()
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
@@ -98,7 +101,9 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 2,
                     Valor = faker.Random.Decimal(),
-                    Cartao = faker.Finance.CreditCardNumber()
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
@@ -130,12 +135,15 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
                     Valor = faker.Random.Decimal(),
-                    Cartao = faker.Finance.CreditCardNumber()
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
             _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsNull();
             _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
 
             //Act
             Func<Task> executarUseCase = () => useCase.Executar(input);
@@ -162,12 +170,15 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
                     Valor = faker.Random.Decimal(),
-                    Cartao = faker.Finance.CreditCardNumber()
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
             _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
             _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsNull();
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
 
             //Act
             Func<Task> executarUseCase = () => useCase.Executar(input);
@@ -177,7 +188,35 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
         }
 
         [Fact]
-        public async Task EfetuarCompraUseCase_ValidarSeCartaoInvalido()
+        public void EfetuarCompraUseCase_ValidarSeNumeroCartaoInvalido()
+        {
+            //Arrange
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal(),
+                    NumeroCartao = "1111111111111111111111111111",
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
+
+            //Act
+            bool inputValido = Validator.TryValidateObject(input, new ValidationContext(input, null, null), null, true);
+
+            //Assert
+            inputValido.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeCCVCartaoInvalido()
         {
             //Arrange
             EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
@@ -194,20 +233,55 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
                     Valor = faker.Random.Decimal(),
-                    Cartao = "1111111111111111111111111111"
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
             _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
-            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsNull();
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
 
             //Act
-            bool inputValido = Validator.TryValidateObject(input, new ValidationContext(input, null, null), null, true);
             Func<Task> executarUseCase = () => useCase.Executar(input);
 
             //Assert
-            inputValido.Should().BeFalse();
-            await executarUseCase.Should().ThrowAsync<NotFoundException>();
+            await executarUseCase.Should().ThrowAsync<BusinessException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeValidadeCartaoInvalido()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal(),
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0620"
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
+
+            //Act
+            Func<Task> executarUseCase = () => useCase.Executar(input);
+
+            //Assert
+            await executarUseCase.Should().ThrowAsync<BusinessException>();
         }
 
         [Fact]
@@ -228,7 +302,9 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
                     ClienteId = faker.Lorem.Letter(10),
                     ModoPagamento = 1,
                     Valor = faker.Random.Decimal(),
-                    Cartao = faker.Finance.CreditCardNumber()
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821"
                 })
                 .Generate();
 
@@ -246,6 +322,45 @@ namespace CompraAplicativos.Tests.UnitTest.UsesCaseTests.Compra
             //Assert
             await executarUseCase.Should().ThrowAsync<Exception>();
             alterarStatusParaFalha.Should().NotThrow<ReceivedCallsException>();
+        }
+
+        [Fact]
+        public async Task EfetuarCompraUseCase_ValidarSeDadosCartaoForamSalvos()
+        {
+            //Arrange
+            EfetuarCompraUseCase useCase = new EfetuarCompraUseCase(
+                _compraRepository,
+                _clienteRepository,
+                _aplicativoRepository,
+                _processaCompraSender,
+                _logger);
+
+            EfetuarCompraInput input = new Faker<EfetuarCompraInput>("pt_BR")
+                .CustomInstantiator(faker => new EfetuarCompraInput()
+                {
+                    AplicativoId = faker.Lorem.Letter(10),
+                    ClienteId = faker.Lorem.Letter(10),
+                    ModoPagamento = 1,
+                    Valor = faker.Random.Decimal(),
+                    NumeroCartao = faker.Finance.CreditCardNumber(),
+                    CCVCartao = faker.Finance.CreditCardCvv(),
+                    ValidadeCartao = "0821",
+                    GuardarCartao = true
+                })
+                .Generate();
+
+            _clienteRepository.ObterClientePorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarCliente());
+            _aplicativoRepository.ObterAplicativoPorId(Arg.Any<string>()).ReturnsForAnyArgs(_mock.GerarAplicativo());
+            _compraRepository.Registrar(Arg.Any<Core.Compras.Compra>()).ReturnsForAnyArgs(_mock.GerarCompra((ModoPagamento)input.ModoPagamento));
+
+            Action guardarCartaoCliente = () => _clienteRepository.Received(1).GuardarCartaoCliente(Arg.Any<string>(), Arg.Any<Cartao>());
+
+            //Act
+            EfetuarCompraOutput output = await useCase.Executar(input);
+
+            //Assert
+            guardarCartaoCliente.Should().NotThrow<ReceivedCallsException>();
+            output.Should().NotBeNull();
         }
     }
 }

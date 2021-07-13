@@ -44,21 +44,23 @@ namespace CompraAplicativos.Api.Controllers.Clientes.v1
         {
             try
             {
-                _logger.LogInformation("Ínicio do cadastro de cliente");
+                _logger.LogInformation("Cadastro de cliente {Cpf}: Início", input.Cpf);
 
                 CadastrarClienteOutput output = await useCase.Executar(input);
+
+                _logger.LogInformation("Cadastro de cliente {Cpf}: Fim", input.Cpf);
 
                 return new ObjectResult(new ClientePresenter(output).Presenter()) { StatusCode = (int)HttpStatusCode.Created };
             }
             catch (BusinessException businessException)
             {
-                _logger.LogError(businessException, "Erro ao tentar cadastrar o cliente");
+                _logger.LogError(businessException, "Cadastro de cliente {Cpf}: Erro de validação", input.Cpf);
 
                 return new BadRequestObjectResult(error: new ValidationProblemDetails(businessException.ToDictionary()));
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Erro inesperado ao tentar cadastrar o cliente");
+                _logger.LogError(exception, "Cadastro de cliente {Cpf}: Erro inesperado", input.Cpf);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -79,21 +81,22 @@ namespace CompraAplicativos.Api.Controllers.Clientes.v1
         {
             try
             {
-                _logger.LogInformation("Ínicio do obter cliente por cpf");
+                _logger.LogInformation("Obter cliente {cpf}: Início", cpf);
 
                 ObterClienteOutput output = await useCase.Executar(cpf);
 
+                _logger.LogInformation("Obter cliente {cpf}: Fim", cpf);
                 return Ok(new ClientePresenter(output).Presenter());
             }
             catch (NotFoundException notfoundException)
             {
-                _logger.LogError(notfoundException, "Erro ao tentar obter o cliente");
+                _logger.LogError(notfoundException, "Obter cliente {cpf}: Não encontrado", cpf);
 
                 return NotFound();
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Erro inesperado ao tentar obter o cliente");
+                _logger.LogError(exception, "Obter cliente {cpf}: Erro inesperado", cpf);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

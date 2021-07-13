@@ -1,4 +1,5 @@
-﻿using CompraAplicativos.Core.Clientes.ValueObjects;
+﻿using CompraAplicativos.Core.Cartoes.ValueObjects;
+using CompraAplicativos.Core.Clientes.ValueObjects;
 using System;
 
 namespace CompraAplicativos.Core.Clientes
@@ -53,11 +54,18 @@ namespace CompraAplicativos.Core.Clientes
             Endereco = endereco;
         }
 
+        public void AtribuirCartao(Cartao cartao)
+        {
+            Cartao = cartao;
+        }
+
+
         public string Id { get; }
         public string Nome { get; }
         public string Cpf { get; }
         public DateTime DataNascimento { get; }
         public string Sexo { get; }
         public Endereco Endereco { get; private set; }
+        public Cartao Cartao { get; private set; }
     }
 }

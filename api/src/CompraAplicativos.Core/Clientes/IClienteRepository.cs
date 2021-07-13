@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using CompraAplicativos.Core.Cartoes.ValueObjects;
+using System.Threading.Tasks;
 
 namespace CompraAplicativos.Core.Clientes
 {
@@ -8,5 +9,7 @@ namespace CompraAplicativos.Core.Clientes
         Task<bool> VerificarClienteExistePorCpf(string cpf);
         Task<Cliente> ObterClientePorCpf(string cpf);
         Task<Cliente> ObterClientePorId(string clienteId);
+        Task GuardarCartaoCliente(string clienteId, Cartao cartao);
+        Task ObterCartaoCliente(Cliente cliente, string numeroCartao);
     }
 }

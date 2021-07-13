@@ -43,29 +43,29 @@ namespace CompraAplicativos.Api.Controllers.Compras.v1
         {
             try
             {
-                _logger.LogInformation("Ínicio do efetuar compra");
+                _logger.LogInformation("Efetuar compra: Aplicativo {AplicativoId} Cliente {ClienteId} - Início", input.AplicativoId, input.ClienteId);
 
                 EfetuarCompraOutput output = await useCase.Executar(input);
 
-                _logger.LogInformation("Fim do efetuar compra");
+                _logger.LogInformation("Efetuar compra: Aplicativo {AplicativoId} Cliente {ClienteId} - Fim", input.AplicativoId, input.ClienteId);
 
                 return new ObjectResult(new CompraPresenter(output).Presenter()) { StatusCode = (int)HttpStatusCode.Created };
             }
             catch (NotFoundException notfoundException)
             {
-                _logger.LogError(notfoundException, "Erro ao tentar efetuar compra");
+                _logger.LogError(notfoundException, "Efetuar compra: Aplicativo {AplicativoId} Cliente {ClienteId} - Erro", input.AplicativoId, input.ClienteId);
 
                 return new NotFoundObjectResult(new ValidationProblemDetails(notfoundException.ToDictionary()));
             }
             catch (BusinessException businessException)
             {
-                _logger.LogError(businessException, "Erro ao tentar efetuar compra");
+                _logger.LogError(businessException, "Efetuar compra: Aplicativo {AplicativoId} Cliente {ClienteId} - Erro", input.AplicativoId, input.ClienteId);
 
                 return new BadRequestObjectResult(error: new ValidationProblemDetails(businessException.ToDictionary()));
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Erro inesperado ao tentar efetuar compra");
+                _logger.LogError(exception, "Efetuar compra: Aplicativo {AplicativoId} Cliente {ClienteId} - Erro inesperado", input.AplicativoId, input.ClienteId);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

@@ -15,7 +15,13 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
         [Required(ErrorMessage = MensagensValidacao.CampoObrigatorio, AllowEmptyStrings = false)]
         [CreditCard(ErrorMessage = MensagensValidacao.CampoInvalido)]
-        public string Cartao { get; set; }
+        public string NumeroCartao { get; set; }
+
+        [StringLength(3, MinimumLength = 3, ErrorMessage = MensagensValidacao.CampoInvalido)]
+        public string CCVCartao { get; set; }
+
+        [StringLength(4, MinimumLength = 4, ErrorMessage = MensagensValidacao.CampoInvalido)]
+        public string ValidadeCartao { get; set; }
 
         public bool GuardarCartao { get; set; }
     }

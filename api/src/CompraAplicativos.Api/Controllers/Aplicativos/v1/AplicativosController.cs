@@ -37,10 +37,11 @@ namespace CompraAplicativos.Api.Controllers.Aplicativos.v1
         {
             try
             {
-                _logger.LogInformation("Obter lita de aplicativos");
+                _logger.LogInformation("Obter aplicativos: Início");
 
                 IEnumerable<ObterAplicativosOutput> output = await useCase.Executar();
 
+                _logger.LogInformation("Obter aplicativos: Fim");
                 return Ok(new AplicativosPresenter(output).Presenter());
             }
             catch (Exception exception)

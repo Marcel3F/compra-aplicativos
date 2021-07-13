@@ -1,10 +1,10 @@
 ﻿using CompraAplicativos.Application.Exceptions;
 using CompraAplicativos.Application.MessageBroker;
 using CompraAplicativos.Core.Aplicativos;
+using CompraAplicativos.Core.Cartoes.ValueObjects;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras;
 using CompraAplicativos.Core.Compras.Enums;
-using CompraAplicativos.Core.Compras.ValueObjects;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -22,6 +22,7 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
         private Core.Clientes.Cliente Cliente;
         private Core.Aplicativos.Aplicativo Aplicativo;
+        private Cartao Cartao;
 
         public EfetuarCompraUseCase(
             ICompraRepository compraRepository,
@@ -46,7 +47,14 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
                 throw new BusinessException("Modo de pagamento indisponível");
             }
 
+            await ObterCartaoParaCompra(input);
+
             Core.Compras.Compra compra = await RegistrarCompra(input);
+
+            if (input.GuardarCartao)
+            {
+                await GuardarCartao(compra);
+            }
 
             return new EfetuarCompraOutput(compra);
         }
@@ -78,6 +86,48 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
             return await _clienteRepository.ObterClientePorId(clienteId);
         }
 
+        private async Task<Cartao> ObterCartaoParaCompra(EfetuarCompraInput input)
+        {
+            await _clienteRepository.ObterCartaoCliente(Cliente, input.NumeroCartao);
+
+            Cartao = Cliente.Cartao;
+            if (Cartao is null)
+            {
+                Cartao = new Cartao(input.NumeroCartao, input.CCVCartao, input.ValidadeCartao);
+            }
+
+            ValidarDadosCartao(Cartao);
+
+            return Cartao;
+        }
+
+        private static void ValidarDadosCartao(Cartao cartao)
+        {
+            if (string.IsNullOrEmpty(cartao.Ccv))
+            {
+                throw new BusinessException("CCV do cartão está inválido");
+            }
+
+            if (string.IsNullOrEmpty(cartao.Validade))
+            {
+                throw new BusinessException("Validade do cartão está inválida");
+            }
+            else
+            {
+                int mes = Convert.ToInt32(cartao.Validade.Substring(0, 2));
+                int ano = Convert.ToInt32(cartao.Validade.Substring(2, 2));
+
+                DateTime dataAtual = DateTime.Today;
+                int anoAtual = Convert.ToInt32(dataAtual.ToString("yy"));
+                int mesAtual = Convert.ToInt32(dataAtual.ToString("MM"));
+
+                if (ano < anoAtual || (ano == anoAtual && mes < mesAtual))
+                {
+                    throw new BusinessException("Validade do cartão está inválida");
+                }
+            }
+        }
+
         private async Task<Core.Compras.Compra> RegistrarCompra(EfetuarCompraInput input)
         {
             Core.Compras.Compra compra = default;
@@ -87,18 +137,13 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
                 Cliente,
                 Aplicativo,
                 input.Valor,
-                (ModoPagamento)input.ModoPagamento);
-
-                if (input.GuardarCartao)
-                {
-                    compra.GuardarCartao(new Cartao(input.Cartao));
-                }
+                (ModoPagamento)input.ModoPagamento,
+                Cartao);
 
                 compra = await _compraRepository.Registrar(compra);
                 _logger.LogInformation("Compra {Id}: registrada com sucesso", compra.Id);
 
                 await _processaCompraSender.Enviar(compra);
-                return compra;
             }
             catch (Exception exception)
             {
@@ -106,6 +151,7 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
 
                 if (compra != null && !string.IsNullOrEmpty(compra.Id))
                 {
+                    compra.AtribuirStatus(Status.Falha);
                     await _compraRepository.AlterarStatusCompraParaFalha(compra.Id);
                     _logger.LogInformation("Compra {Id}: registrada como falha", compra.Id);
                 }
@@ -113,6 +159,19 @@ namespace CompraAplicativos.Application.UseCases.Compra.EfetuarCompra
                 throw;
             }
 
+            return compra;
+        }
+
+        private async Task GuardarCartao(Core.Compras.Compra compra)
+        {
+            try
+            {
+                await _clienteRepository.GuardarCartaoCliente(Cliente.Id, compra.Cartao);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Ocorreu algum erro ao guardar cartão");
+            }
         }
     }
 }

@@ -24,10 +24,12 @@ namespace CompraAplicativos.Infrastructure.DataAccess.Repositories
                 DataCompra = compra.DataCompra,
                 Valor = compra.Valor,
                 ModoPagamento = compra.ModoPagamento,
-                Cartao = compra.Cartao != null ? new CartaoSchema
+                Cartao = new CartaoSchema
                 {
-                    Numero = compra.Cartao.Numero
-                } : null,
+                    Numero = compra.Cartao.Numero,
+                    CCV = compra.Cartao.Ccv,
+                    Validade = compra.Cartao.Validade
+                },
                 Cliente = new ClienteCompraSchema
                 {
                     Id = compra.Cliente.Id,

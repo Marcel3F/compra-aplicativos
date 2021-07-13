@@ -65,6 +65,16 @@ namespace CompraAplicativos.Infrastructure.DataAccess
                     i.SetIgnoreExtraElements(true);
                 });
             }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(ClienteCartaoSchema)))
+            {
+                BsonClassMap.RegisterClassMap<ClienteCartaoSchema>(i =>
+                {
+                    i.AutoMap();
+                    i.MapIdMember(c => c.Id);
+                    i.SetIgnoreExtraElements(true);
+                });
+            }
         }
     }
 }

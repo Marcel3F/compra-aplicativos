@@ -1,4 +1,6 @@
-﻿namespace CompraAplicativos.Infrastructure.DataAccess.Schemas.Extensions
+﻿using CompraAplicativos.Core.Cartoes.ValueObjects;
+
+namespace CompraAplicativos.Infrastructure.DataAccess.Schemas.Extensions
 {
     public static class CompraSchemaExtension
     {
@@ -8,10 +10,13 @@
             
             Core.Aplicativos.Aplicativo aplicativo = new Core.Aplicativos.Aplicativo(schema.Aplicativo.Id, schema.Aplicativo.Nome, schema.Valor);
 
+            Cartao cartao = new Cartao(schema.Cartao.Numero, schema.Cartao.CCV, schema.Cartao.Validade);
+
             Core.Compras.Compra compra = new Core.Compras.Compra(schema.Id, cliente, aplicativo, schema.Valor, schema.ModoPagamento);
             
             compra.AtribuirStatus(schema.Status);
             compra.AtribuirDataCompra(schema.DataCompra);
+            compra.AtribuirCartao(cartao);
 
             return compra;
         }

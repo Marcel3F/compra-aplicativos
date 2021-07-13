@@ -1,7 +1,7 @@
 ﻿using CompraAplicativos.Core.Aplicativos;
+using CompraAplicativos.Core.Cartoes.ValueObjects;
 using CompraAplicativos.Core.Clientes;
 using CompraAplicativos.Core.Compras.Enums;
-using CompraAplicativos.Core.Compras.ValueObjects;
 using System;
 
 namespace CompraAplicativos.Core.Compras
@@ -20,21 +20,20 @@ namespace CompraAplicativos.Core.Compras
             Aplicativo = aplicativo;
             Valor = valor;
             ModoPagamento = modoPagamento;
-
-            AtribuirStatus(Status.AguardandoProcessamento);
-            AtribuirDataCompra(DateTime.Now);
         }
 
         public Compra(
             Cliente cliente,
             Aplicativo aplicativo,
             decimal valor,
-            ModoPagamento modoPagamento)
+            ModoPagamento modoPagamento,
+            Cartao cartao)
         {
             Cliente = cliente;
             Aplicativo = aplicativo;
             Valor = valor;
             ModoPagamento = modoPagamento;
+            Cartao = cartao;
 
             AtribuirStatus(Status.AguardandoProcessamento);
             AtribuirDataCompra(DateTime.Now);
@@ -50,7 +49,7 @@ namespace CompraAplicativos.Core.Compras
             Status = status;
         }
 
-        public void GuardarCartao(Cartao cartao)
+        public void AtribuirCartao(Cartao cartao)
         {
             Cartao = cartao;
         }
@@ -63,6 +62,5 @@ namespace CompraAplicativos.Core.Compras
         public Status Status { get; private set; }
         public DateTime DataCompra { get; private set; }
         public Cartao Cartao { get; private set; }
-
     }
 }
